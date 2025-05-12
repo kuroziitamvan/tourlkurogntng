@@ -1,7 +1,10 @@
 async function upload() {
   const fileInput = document.getElementById('fileInput');
   const file = fileInput.files[0];
-  if (!file) return alert("Pilih gambar dulu!");
+  if (!file) {
+    alert("Pilih gambar dulu!");
+    return;
+  }
 
   const formData = new FormData();
   formData.append("fileToUpload", file);
@@ -13,16 +16,19 @@ async function upload() {
     });
 
     const data = await res.text();
-    const url = data.trim();
-
-    document.getElementById("preview").innerHTML = `
-      <p><a href="${url}" target="_blank">${url}</a></p>
-      <img src="${url}" alt="Uploaded Image" />
-      <br><br>
-      <button onclick="copyLink('${url}')">Salin Link</button>
-    `;
-
-    copyLink(url);
+    
+    if (data.includes('https://')) {
+      const url = data.trim();
+      document.getElementById("preview").innerHTML = `
+        <p><a href="${url}" target="_blank">${url}</a></p>
+        <img src="${url}" alt="Uploaded Image" />
+        <br><br>
+        <button onclick="copyLink('${url}')">Salin Link</button>
+      `;
+      copyLink(url);
+    } else {
+      alert("Gagal upload gambar! Coba lagi.");
+    }
   } catch (err) {
     alert("Gagal upload: " + err.message);
   }
